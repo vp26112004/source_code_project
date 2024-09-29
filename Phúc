@@ -1,0 +1,56 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Đặt mã hóa đầu ra thành UTF-8 để hiển thị tiếng Việt
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+        // Tạo danh sách học sinh
+        List<Student> students = new List<Student>
+        {
+            new Student { Id = 1, Name = "An", Age = 16 },
+            new Student { Id = 2, Name = "Bình", Age = 18 },
+            new Student { Id = 3, Name = "Cường", Age = 15 },
+            new Student { Id = 4, Name = "Dũng", Age = 19 },
+            new Student { Id = 5, Name = "Anh", Age = 17 }
+        };
+
+        // a. In danh sách toàn bộ danh sách học sinh
+        Console.WriteLine("Danh sách học sinh:");
+        students.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
+
+        // b. Tìm và in ra danh sách các học sinh có tuổi từ 15 đến 18
+        var ageRangeStudents = students.Where(s => s.Age >= 15 && s.Age <= 18).ToList();
+        Console.WriteLine("\nHọc sinh có tuổi từ 15 đến 18:");
+        ageRangeStudents.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
+
+        // c. Tìm và in ra học sinh có tên bắt đầu bằng chữ "A"
+        var studentsWithA = students.Where(s => s.Name.StartsWith("A")).ToList();
+        Console.WriteLine("\nHọc sinh có tên bắt đầu bằng chữ 'A':");
+        studentsWithA.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
+
+        // d. Tính tổng tuổi của tất cả học sinh trong danh sách
+        var totalAge = students.Sum(s => s.Age);
+        Console.WriteLine($"\nTổng tuổi của tất cả học sinh: {totalAge}");
+
+        // e. Tìm và in ra học sinh có tuổi lớn nhất
+        var oldestStudent = students.OrderByDescending(s => s.Age).FirstOrDefault();
+        Console.WriteLine($"\nHọc sinh có tuổi lớn nhất: Id: {oldestStudent.Id}, Name: {oldestStudent.Name}, Age: {oldestStudent.Age}");
+
+        // f. Sắp xếp danh sách học sinh theo tuổi tăng dần và in ra danh sách sau khi sắp xếp
+        var sortedStudents = students.OrderBy(s => s.Age).ToList();
+        Console.WriteLine("\nDanh sách học sinh sau khi sắp xếp theo tuổi:");
+        sortedStudents.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
+    }
+}
