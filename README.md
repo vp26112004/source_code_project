@@ -1,56 +1,37 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
-class Student
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public int Age { get; set; }
-}
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
-
-
-        List<Student> students = new List<Student>
+        try
         {
-            new Student { Id = 1, Name = "An", Age = 16 },
-            new Student { Id = 2, Name = "Bình", Age = 18 },
-            new Student { Id = 3, Name = "Cường", Age = 15 },
-            new Student { Id = 4, Name = "Dũng", Age = 19 },
-            new Student { Id = 5, Name = "Anh", Age = 17 }
-        };
+            // Yêu cầu người dùng nhập số lượng mặt hàng
+            Console.Write("Nhập số lượng mặt hàng: ");
+            int soLuongMatHang = int.Parse(Console.ReadLine());
 
+            decimal tongGiaTriDonHang = 0;
 
-        Console.WriteLine("Danh sách học sinh:");
-        students.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
+            // Duyệt qua từng mặt hàng để nhập giá tiền
+            for (int i = 1; i <= soLuongMatHang; i++)
+            {
+                Console.Write($"Nhập số tiền của mặt hàng {i}: ");
+                decimal giaMatHang = decimal.Parse(Console.ReadLine());
 
+                // Cộng giá của mặt hàng vào tổng giá trị đơn hàng
+                tongGiaTriDonHang += giaMatHang;
+            }
 
-        var ageRangeStudents = students.Where(s => s.Age >= 15 && s.Age <= 18).ToList();
-        Console.WriteLine("\nHọc sinh có tuổi từ 15 đến 18:");
-        ageRangeStudents.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
-
-
-        var studentsWithA = students.Where(s => s.Name.StartsWith("A")).ToList();
-        Console.WriteLine("\nHọc sinh có tên bắt đầu bằng chữ 'A':");
-        studentsWithA.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
-
-
-        var totalAge = students.Sum(s => s.Age);
-        Console.WriteLine($"\nTổng tuổi của tất cả học sinh: {totalAge}");
-
-
-        var oldestStudent = students.OrderByDescending(s => s.Age).FirstOrDefault();
-        Console.WriteLine($"\nHọc sinh có tuổi lớn nhất: Id: {oldestStudent.Id}, Name: {oldestStudent.Name}, Age: {oldestStudent.Age}");
-
-
-        var sortedStudents = students.OrderBy(s => s.Age).ToList();
-        Console.WriteLine("\nDanh sách học sinh sau khi sắp xếp theo tuổi:");
-        sortedStudents.ForEach(s => Console.WriteLine($"Id: {s.Id}, Name: {s.Name}, Age: {s.Age}"));
+            // In ra tổng giá trị đơn hàng
+            Console.WriteLine("Tổng giá trị đơn hàng: " + tongGiaTriDonHang + " VND");
+        }
+        catch (FormatException)
+        {
+            Console.WriteLine("Dữ liệu nhập vào không hợp lệ! Vui lòng nhập số hợp lệ.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Đã xảy ra lỗi: " + ex.Message);
+        }
     }
 }
