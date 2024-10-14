@@ -1,0 +1,219 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace De01
+{
+    public partial class frmSinhvien : Form
+    {
+
+        private string connectionString = @"Data Source=ADMIN-PC\SQLEXPRESS;Initial Catalog=QuanlySV;Integrated Security=True;";
+
+
+        public frmSinhvien()
+        {
+            InitializeComponent();
+        }
+
+
+        //private void frmSinhvien_Load(object sender, EventArgs e)
+        // {
+
+        //}
+
+        private void LoadSinhvienToDataGridView()
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "select *from Sinhvien";
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                // Tạo DataTable để lưu dữ liệu
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                // Gán DataTable vào DataGridView
+                dgvSinhvien.DataSource = dt;
+            }
+        }
+
+        private void LoadLopToComboBox()
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "select *from Lop"; // Chỉnh lại truy vấn
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataReader reader = command.ExecuteReader();
+
+                comboLophoc.Items.Clear();
+                while (reader.Read())
+                {
+                    comboLophoc.Items.Add(new { TenLop = reader["TenLop"].ToString(), MaLop = reader["MaLop"].ToString() });
+                }
+
+                reader.Close();
+            }
+        }
+        private void dgvSinhvien_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvSinhvien.SelectedRows.Count > 0)
+            {
+                DataGridViewRow row = dgvSinhvien.SelectedRows[0];
+                txtmaSV.Text = row.Cells["MaSV"].Value.ToString();
+                txtHoten.Text = row.Cells["HotenSV"].Value.ToString();
+
+                // Kiểm tra giá trị trước khi gán
+                if (row.Cells["NgaySinh"].Value != DBNull.Value)
+                {
+                    dateTimengaysinh.Value = Convert.ToDateTime(row.Cells["ngaySinh"].Value);
+                }
+
+                foreach (var item in comboLophoc.Items)
+                {
+                    if ((item as dynamic).TenLop == row.Cells["TenLop"].Value.ToString())
+                    {
+                        comboLophoc.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                EnableButtons(); // Kích hoạt các nút khi chọn sinh viên
+            }
+        }
+        private void EnableButtons()
+        {
+            //  btnSua.Enabled = true;
+            // btnXoa.Enabled = true;
+            btnLuu.Enabled = true;
+            btnKluu.Enabled = true;
+        }
+
+        private void DisableButtons()
+        {
+            // btnSua.Enabled = false;
+            // btnXoa.Enabled = false;
+            btnLuu.Enabled = false;
+            btnKluu.Enabled = false;
+        }
+
+
+
+        private void FrmSinhvien_Load_1(object sender, EventArgs e)
+        {
+            // Tải dữ liệu vào DataGridView và ComboBox
+            LoadSinhvienToDataGridView();
+            LoadLopToComboBox();
+
+            // Vô hiệu hóa các nút thao tác ban đầu
+            DisableButtons();
+        }
+
+        private void comboLophoc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvSinhvien_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void btnThem_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "INSERT INTO Sinhvien (MaSV, HotenSV, ngaySinh, MaLop) VALUES (@MaSV, @HotenSV, @ngaySinh, @MaLop)";
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@MaSV", txtmaSV.Text);
+                command.Parameters.AddWithValue("@HotenSV", txtHoten.Text);
+                command.Parameters.AddWithValue("@ngaySinh", dateTimengaysinh.Value);
+                command.Parameters.AddWithValue("@MaLop", (comboLophoc.SelectedItem as dynamic).MaLop);
+
+                command.ExecuteNonQuery();
+            }
+
+
+            LoadSinhvienToDataGridView();
+        }
+
+        private void btnSua_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "UPDATE Sinhvien SET HotenSV = @HotenSV, ngaySinh = @ngaySinh, MaLop = @MaLop WHERE MaSV = @MaSV";
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@MaSV", txtmaSV.Text);
+                command.Parameters.AddWithValue("@HotenSV", txtHoten.Text);
+                command.Parameters.AddWithValue("@ngaySinh", dateTimengaysinh.Value);
+                command.Parameters.AddWithValue("@MaLop", (comboLophoc.SelectedItem as dynamic).MaLop);
+
+                command.ExecuteNonQuery();
+            }
+
+            LoadSinhvienToDataGridView();
+        }
+
+
+        private void btnXoa_Click(object sender, EventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "DELETE FROM Sinhvien WHERE MaSV = @MaSV";
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@MaSV", txtmaSV.Text);
+
+                command.ExecuteNonQuery();
+            }
+
+            LoadSinhvienToDataGridView();
+        }
+
+        private void btnThoat_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnTim_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void frmSinhvien_Load_1(object sender, EventArgs e)
+        {
+            LoadSinhvienToDataGridView();
+            LoadLopToComboBox();
+            DisableButtons(); // Vô hiệu hóa các nút thao tác ban đầu
+        }
+        private void btnLuu_Click(object sender, EventArgs e)
+        {
+            // Logic để lưu lại thông tin đã thêm/sửa vào cơ sở dữ liệu
+        }
+
+        private void btnKluu_Click(object sender, EventArgs e)
+        {
+            // Logic để hủy bỏ thao tác và làm mới form
+            DisableButtons();
+            ClearInputFields(); // Nếu bạn có phương thức này để xóa các trường nhập liệu
+        }
+
+        private void ClearInputFields()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
